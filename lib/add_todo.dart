@@ -37,6 +37,7 @@ class _AddTodoState extends State<AddTodo> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("The Note has been successfully created.")),
       );
+      Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(
         context,

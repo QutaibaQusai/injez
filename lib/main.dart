@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:injez/add_todo.dart';
+import 'package:injez/todo_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const AddTodo(),
+      home: const TodoList(),
     );
   }
 }
