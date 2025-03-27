@@ -53,6 +53,12 @@ class _TodoListState extends State<TodoList> {
     }
   }
 
+  // Edit note
+  Future<void> navigateToEdit(Map item) async {
+    final route = MaterialPageRoute(builder: (c) => AddTodo(todo: item));
+    await Navigator.push(context, route);
+  }
+
   @override
   void initState() {
     getNotes();
@@ -63,7 +69,11 @@ class _TodoListState extends State<TodoList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Notes", style: TextStyle(fontWeight: FontWeight.w500)),
+        backgroundColor: Colors.deepPurple,
+        title: Text(
+          "Notes",
+          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: RefreshIndicator(
@@ -81,6 +91,7 @@ class _TodoListState extends State<TodoList> {
                       trailing: PopupMenuButton(
                         onSelected: (v) {
                           if (v == 'Edit') {
+                            navigateToEdit(item);
                           } else if (v == 'Delete') {
                             deleteNote(id: item['_id']);
                           }
@@ -88,6 +99,7 @@ class _TodoListState extends State<TodoList> {
                         itemBuilder: (context) {
                           return [
                             PopupMenuItem(child: Text("Edit"), value: 'Edit'),
+
                             PopupMenuItem(
                               child: Text("Delete"),
                               value: 'Delete',

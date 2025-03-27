@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AddTodo extends StatefulWidget {
-  const AddTodo({super.key});
+  const AddTodo({super.key, this.todo});
+  final Map? todo;
 
   @override
   State<AddTodo> createState() => _AddTodoState();
@@ -14,6 +15,7 @@ class _AddTodoState extends State<AddTodo> {
   TextEditingController titleControler = TextEditingController();
   TextEditingController describtionControler = TextEditingController();
   bool isCompleted = true;
+  bool isEdit = false;
 
   // create todo
   Future<void> createNote() async {
@@ -45,11 +47,55 @@ class _AddTodoState extends State<AddTodo> {
     }
   }
 
+  // update todo
+  Future<void> upddateTodo({required String id}) async {
+    final uri = "https://api.nstack.in/v1/todos/$id";
+    final url = Uri.parse(uri);
+    final body = {
+      "title": titleControler.text,
+      "description": describtionControler.text,
+      "is_completed": isCompleted,
+    };
+    final response = await http.put(
+      url,
+      body: jsonEncode(body),
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("The Note has been successfully Updated.")),
+      );
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Something went wrong")));
+    }
+  }
+
+  @override
+  void initState() {
+    final todo = widget.todo;
+    if (todo != null) {
+      isEdit = true;
+      titleControler.text = todo['title'];
+      describtionControler.text = todo['description'];
+      isCompleted = todo['is_completed'];
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Note", style: TextStyle(fontWeight: FontWeight.w500)),
+        title: Text(
+          isEdit ? "Edit Note" : "Add Note",
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -85,8 +131,13 @@ class _AddTodoState extends State<AddTodo> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: createNote,
-                child: Text("Add Note", style: TextStyle(color: Colors.white)),
+                onPressed: () {
+                  isEdit ? upddateTodo(id: widget.todo!['_id']) : createNote();
+                },
+                child: Text(
+                  isEdit ? "Update Note" : "Add Note",
+                  style: TextStyle(color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                 ),
